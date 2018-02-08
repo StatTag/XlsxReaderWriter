@@ -66,7 +66,7 @@
     paragraphStyle.alignment = NSTextAlignmentLeft;
 
     NSDictionary *defaultAttributes = @{
-                                        NSForegroundColorAttributeName: [UIColor colorWithRed:0 green:0 blue:0 alpha:1],
+                                        NSForegroundColorAttributeName: [BRANativeColor colorWithRed:0 green:0 blue:0 alpha:1],
                                         NSParagraphStyleAttributeName: paragraphStyle
                                         };
     
@@ -93,7 +93,7 @@
     paragraphStyle.alignment = NSTextAlignmentLeft;
     
     NSDictionary *defaultAttributes = @{
-                                        NSForegroundColorAttributeName: [UIColor colorWithRed:0 green:0 blue:0 alpha:1],
+                                        NSForegroundColorAttributeName: [BRANativeColor colorWithRed:0 green:0 blue:0 alpha:1],
                                         NSParagraphStyleAttributeName: paragraphStyle
                                         };
     
@@ -129,7 +129,7 @@
     paragraphStyle.alignment = NSTextAlignmentLeft;
 
     NSDictionary *defaultAttributes = @{
-                                        NSForegroundColorAttributeName: [UIColor colorWithRed:0 green:0 blue:0 alpha:1],
+                                        NSForegroundColorAttributeName: [BRANativeColor colorWithRed:0 green:0 blue:0 alpha:1],
                                         NSParagraphStyleAttributeName: paragraphStyle
                                         };
 
@@ -140,7 +140,7 @@
     resultAttributedString = [[NSAttributedString alloc] initWithString:@"shared string with " attributes:defaultAttributes].mutableCopy;
     [resultAttributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"color"
                                                                                    attributes:@{
-                                                                                                NSForegroundColorAttributeName: [UIColor colorWithHexString:@"FC0507"],
+                                                                                                NSForegroundColorAttributeName: [BRANativeColor colorWithHexString:@"FC0507"],
                                                                                                 NSParagraphStyleAttributeName: paragraphStyle
                                                                                                 }]];
     
@@ -168,7 +168,7 @@
 - (void)testThemeColor {
     BRAWorksheet *worksheet = _spreadsheet.workbook.worksheets[0];
     
-    XCTAssertEqualObjects([[worksheet cellForCellReference:@"F3"] cellFillColor], [UIColor colorWithRed:247./255. green:150./255. blue:70./255. alpha:1]);
+    XCTAssertEqualObjects([[worksheet cellForCellReference:@"F3"] cellFillColor], [BRANativeColor colorWithRed:247./255. green:150./255. blue:70./255. alpha:1]);
 }
 
 - (void)testNumberFormats {
@@ -243,7 +243,7 @@
                                                            effectiveRange:NULL], nil);
     XCTAssertEqualObjects([[numberFormat formatNumber:-1241.999] attribute:NSForegroundColorAttributeName
                                                                   atIndex:0
-                                                           effectiveRange:NULL], [UIColor redColor]);
+                                                           effectiveRange:NULL], [BRANativeColor redColor]);
     
     numberFormat = NUMBER_FORMAT(@"0%");
     XCTAssertEqualObjects([[numberFormat formatNumber:.5] string], @"50%");
@@ -438,7 +438,7 @@
     paragraphStyle.alignment = NSTextAlignmentLeft;
     NSDictionary *stringAttributes = @{
                                        NSParagraphStyleAttributeName: paragraphStyle,
-                                       NSForegroundColorAttributeName: [UIColor greenColor]
+                                       NSForegroundColorAttributeName: [BRANativeColor greenColor]
                                        };
     
     BRAWorksheet *worksheet = _spreadsheet.workbook.worksheets[0];
@@ -456,7 +456,7 @@
     
     [[worksheet cellForCellReference:@"Y24" shouldCreate:YES] setStringValue:@"FOO / BAR"];
     [[worksheet cellForCellReference:@"Z24" shouldCreate:YES]
-     setAttributedStringValue:[[NSAttributedString alloc] initWithString:@"GREEN" attributes:@{NSForegroundColorAttributeName: [UIColor greenColor]}]];
+     setAttributedStringValue:[[NSAttributedString alloc] initWithString:@"GREEN" attributes:@{NSForegroundColorAttributeName: [BRANativeColor greenColor]}]];
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     df.dateFormat = @"MM/dd/yyyy";
@@ -612,7 +612,7 @@
     //Need to test more things. Only used to generate an XLSX file
     BRAWorksheet *worksheet = _spreadsheet.workbook.worksheets[0];
     
-    UIImage *image = [UIImage imageWithContentsOfFile:[[NSBundle bundleForClass:[self class]] pathForResource:@"photo-1415226481302-c40f24f4d45e" ofType:@"jpeg"]];
+    NSImage *image = [NSImage imageWithContentsOfFile:[[NSBundle bundleForClass:[self class]] pathForResource:@"photo-1415226481302-c40f24f4d45e" ofType:@"jpeg"]];
 
     BRAWorksheetDrawing *drawing = [worksheet addImage:image
                                       inCellReferenced:@"G2"
@@ -629,7 +629,7 @@
     //Need to test more things. Only used to generate an XLSX file
     BRAWorksheet *worksheet = _spreadsheet.workbook.worksheets[0];
     
-    UIImage *image = [UIImage imageWithContentsOfFile:[[NSBundle bundleForClass:[self class]] pathForResource:@"photo-1415226481302-c40f24f4d45e" ofType:@"jpeg"]];
+    NSImage *image = [NSImage imageWithContentsOfFile:[[NSBundle bundleForClass:[self class]] pathForResource:@"photo-1415226481302-c40f24f4d45e" ofType:@"jpeg"]];
     BRAWorksheetDrawing *drawing = [worksheet addImage:image betweenCellsReferenced:@"G2" and:@"I10"
                                             withInsets:UIEdgeInsetsZero preserveTransparency:NO];
     
@@ -645,7 +645,7 @@
     //Need to test more things. Only used to generate an XLSX file
     BRAWorksheet *worksheet = _spreadsheet.workbook.worksheets[0];
     
-    UIImage *image = [UIImage imageWithContentsOfFile:[[NSBundle bundleForClass:[self class]] pathForResource:@"photo-1415226481302-c40f24f4d45e" ofType:@"jpeg"]];
+    BRANativeImage *image = [BRANativeImage imageWithContentsOfFile:[[NSBundle bundleForClass:[self class]] pathForResource:@"photo-1415226481302-c40f24f4d45e" ofType:@"jpeg"]];
     BRAWorksheetDrawing *drawing = [worksheet addImage:image inFrame:CGRectMake(10. * 12700., 10. * 12700., 1024. * 12700., 768. * 12700.)
                                   preserveTransparency:NO];
     
@@ -657,9 +657,9 @@
 - (void)testFillColor {
     BRAWorksheet *worksheet = _spreadsheet.workbook.worksheets[0];
 
-    XCTAssertEqualObjects([[worksheet cellForCellReference:@"A35"] cellFillColor], [UIColor redColor], @"A35 fill should be plain red");
+    XCTAssertEqualObjects([[worksheet cellForCellReference:@"A35"] cellFillColor], [BRANativeColor redColor], @"A35 fill should be plain red");
     
-    [[worksheet cellForCellReference:@"A36" shouldCreate:YES] setCellFillWithForegroundColor:[UIColor yellowColor] backgroundColor:[UIColor blackColor] andPatternType:kBRACellFillPatternTypeDarkTrellis];
+    [[worksheet cellForCellReference:@"A36" shouldCreate:YES] setCellFillWithForegroundColor:[BRANativeColor yellowColor] backgroundColor:[UIColor blackColor] andPatternType:kBRACellFillPatternTypeDarkTrellis];
 
     [_spreadsheet saveAs:[[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"testFillColor.xlsx"]];
 }

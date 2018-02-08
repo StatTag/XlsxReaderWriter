@@ -288,6 +288,9 @@
 					22225F141C47EBB400256993 = {
 						CreatedOnToolsVersion = 7.2;
 					};
+					A7A000661845716F00DA4DA2 = {
+						LastSwiftMigration = 0830;
+					};
 					A7A000731845716F00DA4DA2 = {
 						TestTargetID = A7A000661845716F00DA4DA2;
 					};
@@ -508,6 +511,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -524,6 +528,7 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
