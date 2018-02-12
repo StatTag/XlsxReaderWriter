@@ -1230,7 +1230,7 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_NAME = XlsxReaderWriter;
 				SDKROOT = macosx;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -1263,7 +1263,7 @@
 				OTHER_LDFLAGS = "-all_load";
 				PRODUCT_NAME = XlsxReaderWriter;
 				SDKROOT = macosx;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
