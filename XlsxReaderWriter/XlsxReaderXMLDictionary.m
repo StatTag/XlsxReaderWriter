@@ -1,14 +1,14 @@
 //
-//  XMLDictionary.m
+//  XlsxReaderXMLDictionary.m
 //
-//  Version 1.4
+//  Version 1.4.1
 //
 //  Created by Nick Lockwood on 15/11/2010.
 //  Copyright 2010 Charcoal Design. All rights reserved.
 //
-//  Get the latest version of XMLDictionary from here:
+//  Get the latest version of XlsxReaderXMLDictionary from here:
 //
-//  https://github.com/nicklockwood/XMLDictionary
+//  https://github.com/nicklockwood/XlsxReaderXMLDictionary
 //
 //  This software is provided 'as-is', without any express or implied
 //  warranty.  In no event will the authors be held liable for any damages
@@ -29,13 +29,10 @@
 //  3. This notice may not be removed or altered from any source distribution.
 //
 
-#import "XMLDictionary.h"
+// This version has been integrated to XlsxReader
 
 
-#pragma GCC diagnostic ignored "-Wobjc-missing-property-synthesis"
-#pragma GCC diagnostic ignored "-Wdirect-ivar-access"
-#pragma GCC diagnostic ignored "-Wformat-non-iso"
-#pragma GCC diagnostic ignored "-Wgnu"
+#import <XlsxReaderWriter/XlsxReaderXMLDictionary.h>
 
 
 #import <Availability.h>
@@ -44,29 +41,29 @@
 #endif
 
 
-@interface XMLDictionaryParser () <NSXMLParserDelegate>
+@interface XlsxReaderXMLDictionaryParser () <NSXMLParserDelegate>
 
-@property (nonatomic, strong) NSMutableDictionary *root;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, id> *root;
 @property (nonatomic, strong) NSMutableArray *stack;
 @property (nonatomic, strong) NSMutableString *text;
 
 @end
 
 
-@implementation XMLDictionaryParser
+@implementation XlsxReaderXMLDictionaryParser
 
-+ (XMLDictionaryParser *)sharedInstance
++ (XlsxReaderXMLDictionaryParser *)sharedInstance
 {
     static dispatch_once_t once;
-    static XMLDictionaryParser *sharedInstance;
+    static XlsxReaderXMLDictionaryParser *sharedInstance;
     dispatch_once(&once, ^{
         
-        sharedInstance = [[XMLDictionaryParser alloc] init];
+        sharedInstance = [[XlsxReaderXMLDictionaryParser alloc] init];
     });
     return sharedInstance;
 }
 
-- (id)init
+- (instancetype)init
 {
     if ((self = [super init]))
     {
@@ -82,7 +79,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    XMLDictionaryParser *copy = [[[self class] allocWithZone:zone] init];
+    XlsxReaderXMLDictionaryParser *copy = [[[self class] allocWithZone:zone] init];
     copy.collapseTextNodes = _collapseTextNodes;
     copy.stripEmptyNodes = _stripEmptyNodes;
     copy.trimWhiteSpace = _trimWhiteSpace;
@@ -94,9 +91,9 @@
     return copy;
 }
 
-- (NSDictionary *)dictionaryWithParser:(NSXMLParser *)parser
+- (NSDictionary<NSString *, id> *)dictionaryWithParser:(NSXMLParser *)parser
 {
-    [parser setDelegate:self];
+    parser.delegate = self;
     [parser parse];
     id result = _root;
     _root = nil;
@@ -105,19 +102,19 @@
     return result;
 }
 
-- (NSDictionary *)dictionaryWithData:(NSData *)data
+- (NSDictionary<NSString *, id> *)dictionaryWithData:(NSData *)data
 {
 	NSXMLParser *parser = [[NSXMLParser alloc] initWithData:data];
     return [self dictionaryWithParser:parser];
 }
 
-- (NSDictionary *)dictionaryWithString:(NSString *)string
+- (NSDictionary<NSString *, id> *)dictionaryWithString:(NSString *)string
 {
     NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
     return [self dictionaryWithData:data];
 }
 
-- (NSDictionary *)dictionaryWithFile:(NSString *)path
+- (NSDictionary<NSString *, id> *)dictionaryWithFile:(NSString *)path
 {	
 	NSData *data = [NSData dataWithContentsOfFile:path];
 	return [self dictionaryWithData:data];
@@ -127,7 +124,7 @@
 {	
     if ([node isKindOfClass:[NSArray class]])
     {
-        NSMutableArray *nodes = [NSMutableArray arrayWithCapacity:[node count]];
+        NSMutableArray<NSString *> *nodes = [NSMutableArray arrayWithCapacity:[node count]];
         for (id individualNode in node)
         {
             [nodes addObject:[self XMLStringForNode:individualNode withNodeName:nodeName]];
@@ -136,15 +133,14 @@
     }
     else if ([node isKindOfClass:[NSDictionary class]])
     {
-        NSDictionary *attributes = [(NSDictionary *)node attributes];
+        NSDictionary<NSString *, NSString *> *attributes = [(NSDictionary *)node xlsxReaderAttributes];
         NSMutableString *attributeString = [NSMutableString string];
-        for (NSString *key in [attributes allKeys])
-        {
-            [attributeString appendFormat:@" %@=\"%@\"", [[key description] XMLEncodedString], [[attributes[key] description] XMLEncodedString]];
-        }
+        [attributes enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, __unused BOOL *stop) {
+            [attributeString appendFormat:@" %@=\"%@\"", key.description.xlsxReaderXMLEncodedString, value.description.xlsxReaderXMLEncodedString];
+        }];
         
-        NSString *innerXML = [node innerXML];
-        if ([innerXML length])
+        NSString *innerXML = [node xlsxReaderInnerXML];
+        if (innerXML.length)
         {
             return [NSString stringWithFormat:@"<%1$@%2$@>%3$@</%1$@>", nodeName, attributeString, innerXML];
         }
@@ -155,7 +151,7 @@
     }
     else
     {
-        return [NSString stringWithFormat:@"<%1$@>%2$@</%1$@>", nodeName, [[node description] XMLEncodedString]];
+        return [NSString stringWithFormat:@"<%1$@>%2$@</%1$@>", nodeName, [node description].xlsxReaderXMLEncodedString];
     }
 }
 
@@ -165,21 +161,21 @@
 	{
 		_text = [[_text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] mutableCopy];
 	}
-	if ([_text length])
+	if (_text.length)
 	{
-        NSMutableDictionary *top = [_stack lastObject];
-		id existing = top[XMLDictionaryTextKey];
+        NSMutableDictionary *top = _stack.lastObject;
+		id existing = top[XlsxReaderXMLDictionaryTextKey];
         if ([existing isKindOfClass:[NSArray class]])
         {
             [existing addObject:_text];
         }
         else if (existing)
         {
-            top[XMLDictionaryTextKey] = [@[existing, _text] mutableCopy];
+            top[XlsxReaderXMLDictionaryTextKey] = [@[existing, _text] mutableCopy];
         }
 		else
 		{
-			top[XMLDictionaryTextKey] = _text;
+			top[XlsxReaderXMLDictionaryTextKey] = _text;
 		}
 	}
 	_text = nil;
@@ -201,51 +197,51 @@
 {	
 	[self endText];
 	
-	NSMutableDictionary *node = [NSMutableDictionary dictionary];
+	NSMutableDictionary<NSString *, id> *node = [NSMutableDictionary dictionary];
 	switch (_nodeNameMode)
 	{
-        case XMLDictionaryNodeNameModeRootOnly:
+        case XlsxReaderXMLDictionaryNodeNameModeRootOnly:
         {
             if (!_root)
             {
-                node[XMLDictionaryNodeNameKey] = elementName;
+                node[XlsxReaderXMLDictionaryNodeNameKey] = elementName;
             }
             break;
         }
-        case XMLDictionaryNodeNameModeAlways:
+        case XlsxReaderXMLDictionaryNodeNameModeAlways:
         {
-            node[XMLDictionaryNodeNameKey] = elementName;
+            node[XlsxReaderXMLDictionaryNodeNameKey] = elementName;
             break;
         }
-        case XMLDictionaryNodeNameModeNever:
+        case XlsxReaderXMLDictionaryNodeNameModeNever:
         {
             break;
         }
 	}
     
-	if ([attributeDict count])
+	if (attributeDict.count)
 	{
         switch (_attributesMode)
         {
-            case XMLDictionaryAttributesModePrefixed:
+            case XlsxReaderXMLDictionaryAttributesModePrefixed:
             {
-                for (NSString *key in [attributeDict allKeys])
+                for (NSString *key in attributeDict)
                 {
-                    node[[XMLDictionaryAttributePrefix stringByAppendingString:key]] = attributeDict[key];
+                    node[[XlsxReaderXMLDictionaryAttributePrefix stringByAppendingString:key]] = attributeDict[key];
                 }
                 break;
             }
-            case XMLDictionaryAttributesModeDictionary:
+            case XlsxReaderXMLDictionaryAttributesModeDictionary:
             {
-                node[XMLDictionaryAttributesKey] = attributeDict;
+                node[XlsxReaderXMLDictionaryAttributesKey] = attributeDict;
                 break;
             }
-            case XMLDictionaryAttributesModeUnprefixed:
+            case XlsxReaderXMLDictionaryAttributesModeUnprefixed:
             {
                 [node addEntriesFromDictionary:attributeDict];
                 break;
             }
-            case XMLDictionaryAttributesModeDiscard:
+            case XlsxReaderXMLDictionaryAttributesModeDiscard:
             {
                 break;
             }
@@ -264,11 +260,11 @@
 	}
 	else
 	{
-        NSMutableDictionary *top = [_stack lastObject];
+        NSMutableDictionary<NSString *, id> *top = _stack.lastObject;
 		id existing = top[elementName];
         if ([existing isKindOfClass:[NSArray class]])
         {
-            [existing addObject:node];
+            [(NSMutableArray *)existing addObject:node];
         }
         else if (existing)
         {
@@ -286,11 +282,11 @@
 	}
 }
 
-- (NSString *)nameForNode:(NSDictionary *)node inDictionary:(NSDictionary *)dict
+- (NSString *)nameForNode:(NSDictionary<NSString *, id> *)node inDictionary:(NSDictionary<NSString *, id> *)dict
 {
-	if (node.nodeName)
+	if (node.xlsxReaderNodeName)
 	{
-		return node.nodeName;
+		return node.xlsxReaderNodeName;
 	}
 	else
 	{
@@ -301,7 +297,7 @@
 			{
 				return name;
 			}
-			else if ([object isKindOfClass:[NSArray class]] && [object containsObject:node])
+			else if ([object isKindOfClass:[NSArray class]] && [(NSArray *)object containsObject:node])
 			{
 				return name;
 			}
@@ -314,41 +310,45 @@
 {	
 	[self endText];
     
-    NSMutableDictionary *top = [_stack lastObject];
+    NSMutableDictionary<NSString *, id> *top = _stack.lastObject;
     [_stack removeLastObject];
     
-	if (!top.attributes && !top.childNodes && !top.comments)
+	if (!top.xlsxReaderAttributes && !top.xlsxReaderChildNodes && !top.xlsxReaderComments)
     {
-        NSMutableDictionary *newTop = [_stack lastObject];
+        NSMutableDictionary<NSString *, id> *newTop = _stack.lastObject;
         NSString *nodeName = [self nameForNode:top inDictionary:newTop];
         if (nodeName)
         {
             id parentNode = newTop[nodeName];
-            if (top.innerText && _collapseTextNodes)
+            NSString *innerText = top.xlsxReaderInnerText;
+            if (innerText && _collapseTextNodes)
             {
                 if ([parentNode isKindOfClass:[NSArray class]])
                 {
-                    parentNode[[parentNode count] - 1] = top.innerText;
+                    parentNode[[parentNode count] - 1] = innerText;
                 }
                 else
                 {
-                    newTop[nodeName] = top.innerText;
+                    newTop[nodeName] = innerText;
                 }
             }
-            else if (!top.innerText && _stripEmptyNodes)
+            else if (!innerText)
             {
-                if ([parentNode isKindOfClass:[NSArray class]])
+                if (_stripEmptyNodes)
                 {
-                    [parentNode removeLastObject];
+                    if ([parentNode isKindOfClass:[NSArray class]])
+                    {
+                        [(NSMutableArray *)parentNode removeLastObject];
+                    }
+                    else
+                    {
+                        [newTop removeObjectForKey:nodeName];
+                    }
                 }
-                else
+                else if (!_collapseTextNodes)
                 {
-                    [newTop removeObjectForKey:nodeName];
+                    top[XlsxReaderXMLDictionaryTextKey] = @"";
                 }
-            }
-            else if (!top.innerText && !_collapseTextNodes && !_stripEmptyNodes)
-            {
-                top[XMLDictionaryTextKey] = @"";
             }
         }
 	}
@@ -368,12 +368,12 @@
 {
 	if (_preserveComments)
 	{
-        NSMutableDictionary *top = [_stack lastObject];
-		NSMutableArray *comments = top[XMLDictionaryCommentsKey];
+        NSMutableDictionary<NSString *, id> *top = _stack.lastObject;
+		NSMutableArray<NSString *> *comments = top[XlsxReaderXMLDictionaryCommentsKey];
 		if (!comments)
 		{
 			comments = [@[comment] mutableCopy];
-			top[XMLDictionaryCommentsKey] = comments;
+			top[XlsxReaderXMLDictionaryCommentsKey] = comments;
 		}
 		else
 		{
@@ -385,79 +385,79 @@
 @end
 
 
-@implementation NSDictionary(XMLDictionary)
+@implementation NSDictionary(XlsxReaderXMLDictionary)
 
-+ (NSDictionary *)dictionaryWithXMLParser:(NSXMLParser *)parser
++ (NSDictionary<NSString *, id> *)xlsxReaderDictionaryWithXMLParser:(NSXMLParser *)parser
 {
-	return [[[XMLDictionaryParser sharedInstance] copy] dictionaryWithParser:parser];
+	return [[[XlsxReaderXMLDictionaryParser sharedInstance] copy] dictionaryWithParser:parser];
 }
 
-+ (NSDictionary *)dictionaryWithXMLData:(NSData *)data
++ (NSDictionary<NSString *, id> *)xlsxReaderDictionaryWithXMLData:(NSData *)data
 {
-	return [[[XMLDictionaryParser sharedInstance] copy] dictionaryWithData:data];
+	return [[[XlsxReaderXMLDictionaryParser sharedInstance] copy] dictionaryWithData:data];
 }
 
-+ (NSDictionary *)dictionaryWithXMLString:(NSString *)string
++ (NSDictionary<NSString *, id> *)xlsxReaderDictionaryWithXMLString:(NSString *)string
 {
-	return [[[XMLDictionaryParser sharedInstance] copy] dictionaryWithString:string];
+	return [[[XlsxReaderXMLDictionaryParser sharedInstance] copy] dictionaryWithString:string];
 }
 
-+ (NSDictionary *)dictionaryWithXMLFile:(NSString *)path
++ (NSDictionary<NSString *, id> *)xlsxReaderDictionaryWithXMLFile:(NSString *)path
 {
-	return [[[XMLDictionaryParser sharedInstance] copy] dictionaryWithFile:path];
+	return [[[XlsxReaderXMLDictionaryParser sharedInstance] copy] dictionaryWithFile:path];
 }
 
-- (NSDictionary *)attributes
+- (nullable NSDictionary<NSString *, NSString *> *)xlsxReaderAttributes
 {
-	NSDictionary *attributes = self[XMLDictionaryAttributesKey];
-	if (attributes)
-	{
-		return [attributes count]? attributes: nil;
-	}
-	else
-	{
-		NSMutableDictionary *filteredDict = [NSMutableDictionary dictionaryWithDictionary:self];
-        [filteredDict removeObjectsForKeys:@[XMLDictionaryCommentsKey, XMLDictionaryTextKey, XMLDictionaryNodeNameKey]];
-        for (NSString *key in [filteredDict allKeys])
+    NSDictionary<NSString *, NSString *> *attributes = self[XlsxReaderXMLDictionaryAttributesKey];
+    if (attributes)
+    {
+        return attributes.count? attributes: nil;
+    }
+    else
+    {
+        NSMutableDictionary<NSString *, id> *filteredDict = [NSMutableDictionary dictionaryWithDictionary:self];
+        [filteredDict removeObjectsForKeys:@[XlsxReaderXMLDictionaryCommentsKey, XlsxReaderXMLDictionaryTextKey, XlsxReaderXMLDictionaryNodeNameKey]];
+        for (NSString *key in filteredDict.allKeys)
         {
             [filteredDict removeObjectForKey:key];
-            if ([key hasPrefix:XMLDictionaryAttributePrefix])
+            if ([key hasPrefix:XlsxReaderXMLDictionaryAttributePrefix])
             {
-                filteredDict[[key substringFromIndex:[XMLDictionaryAttributePrefix length]]] = self[key];
+                filteredDict[[key substringFromIndex:XlsxReaderXMLDictionaryAttributePrefix.length]] = self[key];
             }
         }
-        return [filteredDict count]? filteredDict: nil;
+        return filteredDict.count? filteredDict: nil;
 	}
 	return nil;
 }
 
-- (NSDictionary *)childNodes
+- (nullable NSDictionary *)xlsxReaderChildNodes
 {	
 	NSMutableDictionary *filteredDict = [self mutableCopy];
-	[filteredDict removeObjectsForKeys:@[XMLDictionaryAttributesKey, XMLDictionaryCommentsKey, XMLDictionaryTextKey, XMLDictionaryNodeNameKey]];
-	for (NSString *key in [filteredDict allKeys])
+	[filteredDict removeObjectsForKeys:@[XlsxReaderXMLDictionaryAttributesKey, XlsxReaderXMLDictionaryCommentsKey, XlsxReaderXMLDictionaryTextKey, XlsxReaderXMLDictionaryNodeNameKey]];
+	for (NSString *key in filteredDict.allKeys)
     {
-        if ([key hasPrefix:XMLDictionaryAttributePrefix])
+        if ([key hasPrefix:XlsxReaderXMLDictionaryAttributePrefix])
         {
             [filteredDict removeObjectForKey:key];
         }
     }
-    return [filteredDict count]? filteredDict: nil;
+    return filteredDict.count? filteredDict: nil;
 }
 
-- (NSArray *)comments
+- (nullable NSArray *)xlsxReaderComments
 {
-	return self[XMLDictionaryCommentsKey];
+	return self[XlsxReaderXMLDictionaryCommentsKey];
 }
 
-- (NSString *)nodeName
+- (nullable NSString *)xlsxReaderNodeName
 {
-	return self[XMLDictionaryNodeNameKey];
+	return self[XlsxReaderXMLDictionaryNodeNameKey];
 }
 
-- (id)innerText
+- (id)xlsxReaderInnerText
 {	
-	id text = self[XMLDictionaryTextKey];
+	id text = self[XlsxReaderXMLDictionaryTextKey];
 	if ([text isKindOfClass:[NSArray class]])
 	{
 		return [text componentsJoinedByString:@"\n"];
@@ -468,48 +468,44 @@
 	}
 }
 
-- (NSString *)innerXML
+- (NSString *)xlsxReaderInnerXML
 {	
 	NSMutableArray *nodes = [NSMutableArray array];
 	
-	for (NSString *comment in [self comments])
+	for (NSString *comment in [self xlsxReaderComments])
 	{
-        [nodes addObject:[NSString stringWithFormat:@"<!--%@-->", [comment XMLEncodedString]]];
+        [nodes addObject:[NSString stringWithFormat:@"<!--%@-->", [comment xlsxReaderXMLEncodedString]]];
 	}
     
-    NSDictionary *childNodes = [self childNodes];
+    NSDictionary *childNodes = [self xlsxReaderChildNodes];
 	for (NSString *key in childNodes)
 	{
-		[nodes addObject:[XMLDictionaryParser XMLStringForNode:childNodes[key] withNodeName:key]];
+		[nodes addObject:[XlsxReaderXMLDictionaryParser XMLStringForNode:childNodes[key] withNodeName:key]];
 	}
 	
-    NSString *text = [self innerText];
+    NSString *text = [self xlsxReaderInnerText];
     if (text)
     {
-        [nodes addObject:[text XMLEncodedString]];
+        [nodes addObject:[text xlsxReaderXMLEncodedString]];
     }
 	
 	return [nodes componentsJoinedByString:@"\n"];
 }
 
-- (NSString *)XMLString
+- (NSString *)xlsxReaderXMLString
 {
-    NSString *retVal = nil;
-    
-    if ([self count] == 1 && ![self nodeName])
+    if (self.count == 1 && ![self xlsxReaderNodeName])
     {
         //ignore outermost dictionary
-        retVal = [self innerXML];
+        return [self xlsxReaderInnerXML];
     }
     else
     {
-        retVal = [XMLDictionaryParser XMLStringForNode:self withNodeName:[self nodeName] ?: @"root"];
+        return [XlsxReaderXMLDictionaryParser XMLStringForNode:self withNodeName:[self xlsxReaderNodeName] ?: @"root"];
     }
-    
-    return [[retVal stringByReplacingOccurrencesOfString:@"\n" withString:@""] stringByReplacingOccurrencesOfString:@"\r" withString:@""];
 }
 
-- (NSArray *)arrayValueForKeyPath:(NSString *)keyPath
+- (nullable NSArray *)xlsxReaderArrayValueForKeyPath:(NSString *)keyPath
 {
     id value = [self valueForKeyPath:keyPath];
     if (value && ![value isKindOfClass:[NSArray class]])
@@ -519,21 +515,21 @@
     return value;
 }
 
-- (NSString *)stringValueForKeyPath:(NSString *)keyPath
+- (nullable NSString *)xlsxReaderStringValueForKeyPath:(NSString *)keyPath
 {
     id value = [self valueForKeyPath:keyPath];
     if ([value isKindOfClass:[NSArray class]])
     {
-        value = [value count]? value[0]: nil;
+        value = ((NSArray *)value).firstObject;
     }
     if ([value isKindOfClass:[NSDictionary class]])
     {
-        return [(NSDictionary *)value innerText];
+        return [(NSDictionary *)value xlsxReaderInnerText];
     }
     return value;
 }
 
-- (NSDictionary *)dictionaryValueForKeyPath:(NSString *)keyPath
+- (nullable NSDictionary<NSString *, id> *)xlsxReaderDictionaryValueForKeyPath:(NSString *)keyPath
 {
     id value = [self valueForKeyPath:keyPath];
     if ([value isKindOfClass:[NSArray class]])
@@ -542,7 +538,7 @@
     }
     if ([value isKindOfClass:[NSString class]])
     {
-        return @{XMLDictionaryTextKey: value};
+        return @{XlsxReaderXMLDictionaryTextKey: value};
     }
     return value;
 }
@@ -550,9 +546,9 @@
 @end
 
 
-@implementation NSString (XMLDictionary)
+@implementation NSString (XlsxReaderXMLDictionary)
 
-- (NSString *)XMLEncodedString
+- (NSString *)xlsxReaderXMLEncodedString
 {	
 	return [[[[[self stringByReplacingOccurrencesOfString:@"&" withString:@"&amp;"]
                stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"]

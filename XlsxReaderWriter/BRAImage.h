@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRARelationship.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRARelationship.h>
 
 @interface BRAImage : BRARelationship
 

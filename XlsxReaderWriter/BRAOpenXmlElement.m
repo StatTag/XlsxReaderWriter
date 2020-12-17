@@ -6,8 +6,10 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRAOpenXmlElement.h"
-#import "BRAOfficeDocumentPackage.h"
+#import <XlsxReaderWriter/BRAOpenXmlElement.h>
+#import <XlsxReaderWriter/BRAOfficeDocumentPackage.h>
+#import <XlsxReaderWriter/BRARelationship.h>
+#import <XlsxReaderWriter/NSDictionary+OpenXMLDictionaryParser.h>
 
 @implementation BRAOpenXmlElement
 
@@ -81,7 +83,18 @@
     }
     
     if ([self xmlRepresentation]) {
-        [[self xmlRepresentation] writeToFile:fullFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        
+        // Fixing LF to CRFL
+        NSString *representation = [[[self xmlRepresentation] copy] stringByReplacingOccurrencesOfString:@"\r\n" withString:@"---TEMPMARK---"];
+        representation = [representation  stringByReplacingOccurrencesOfString:@"\n" withString:@"\r\n"];
+        representation = [representation  stringByReplacingOccurrencesOfString:@"---TEMPMARK---" withString:@"\r\n"];
+        
+        // Fixing Line Ending
+        if ([[representation substringFromIndex:representation.length-2] isEqualToString:@"\r\n"]) {
+            representation = [representation substringToIndex:representation.length-2];
+        }
+        
+        [representation writeToFile:fullFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     } else {
         [_dataRepresentation writeToFile:fullFilePath options:0 error:&error];
     }

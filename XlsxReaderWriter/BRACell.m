@@ -6,13 +6,20 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRACell.h"
-#import "BRAColumn.h"
-#import "BRARow.h"
-#import "BRAImage.h"
-#import "BRAWorksheet.h"
-#import "BRADrawing.h"
-#import "BRACellFormat.h"
+#import <XlsxReaderWriter/BRACell.h>
+#import <XlsxReaderWriter/BRAColumn.h>
+#import <XlsxReaderWriter/BRARow.h>
+#import <XlsxReaderWriter/BRAImage.h>
+#import <XlsxReaderWriter/BRAWorksheet.h>
+#import <XlsxReaderWriter/BRADrawing.h>
+#import <XlsxReaderWriter/BRACellFormat.h>
+#import <XlsxReaderWriter/BRASharedString.h>
+#import <XlsxReaderWriter/BRANumberFormat.h>
+#import <XlsxReaderWriter/BRACellFill.h>
+#import <XlsxReaderWriter/BRAStyles.h>
+#import <XlsxReaderWriter/BRASharedString.h>
+#import <XlsxReaderWriter/BRASharedStrings.h>
+#import <XlsxReaderWriter/XlsxReaderXMLDictionary.h>
 
 @implementation BRACell
 
@@ -36,16 +43,16 @@
 - (void)loadAttributes {
     NSDictionary *dictionaryRepresentation = [super dictionaryRepresentation];
     
-    _reference = dictionaryRepresentation.attributes[@"r"];
+    _reference = dictionaryRepresentation.xlsxReaderAttributes[@"r"];
 
-    if (dictionaryRepresentation.attributes[@"s"]) {
-        _styleId = [dictionaryRepresentation.attributes[@"s"] integerValue];
+    if (dictionaryRepresentation.xlsxReaderAttributes[@"s"]) {
+        _styleId = [dictionaryRepresentation.xlsxReaderAttributes[@"s"] integerValue];
     }
     
     //Check cell type
-    if (dictionaryRepresentation.attributes[@"t"]) {
+    if (dictionaryRepresentation.xlsxReaderAttributes[@"t"]) {
         
-        NSString *cellType = dictionaryRepresentation.attributes[@"t"];
+        NSString *cellType = dictionaryRepresentation.xlsxReaderAttributes[@"t"];
         
         //Boolean
         if ([cellType isEqual:@"b"]) {
@@ -283,6 +290,16 @@
     return [[self stringValue] integerValue];
 }
 
+- (long long)longLongValue {
+    if (_type == BRACellContentTypeBoolean) {
+        return [_value boolValue];
+    } else if (_type == BRACellContentTypeNumber || _type == BRACellContentTypeUnknown) {
+        return [_value longLongValue];
+    }
+    
+    return [[self stringValue] longLongValue];
+}
+
 - (float)floatValue {
     if (_type == BRACellContentTypeBoolean) {
         return [_value boolValue];
@@ -293,6 +310,16 @@
     return [[self stringValue] floatValue];
 }
 
+- (double)doubleValue {
+    if (_type == BRACellContentTypeBoolean) {
+        return [_value boolValue];
+    } else if (_type == BRACellContentTypeNumber || _type == BRACellContentTypeUnknown) {
+        return [_value doubleValue];
+    }
+    
+    return [[self stringValue] doubleValue];
+}
+
 - (NSString *)stringValue {
     return [[self attributedStringValue] string];
 }
@@ -300,7 +327,7 @@
 - (NSAttributedString *)attributedStringValue {
     NSMutableDictionary *attributedTextAttributes = [_worksheet.styles.cellFormats[_styleId] textAttributes].mutableCopy;
     if (attributedTextAttributes == nil) {
-        attributedTextAttributes = @{}.mutableCopy;
+        attributedTextAttributes = [[NSMutableDictionary alloc] init];
     }
     
     if (_type == BRACellContentTypeBoolean) {
@@ -316,7 +343,23 @@
         return [[NSAttributedString alloc] initWithString:[df stringFromDate:_dateValue] attributes:attributedTextAttributes];
         
     } else if (_type == BRACellContentTypeString) {
-        return [[NSAttributedString alloc] initWithString:_value attributes:attributedTextAttributes];
+        @try {
+          // If _value is actually a string, then just return
+          if ([_value isKindOfClass:NSString.class]) {
+            return [[NSAttributedString alloc] initWithString:_value attributes:attributedTextAttributes];
+          }
+          // _value can be a dictionary with __text & _xml.space = 'reserve'
+          // in case of leading or tailing spaces included within the text
+          if ([_value isKindOfClass:NSDictionary.class]){
+            NSDictionary* dict = (NSDictionary*)_value;
+            return [[NSAttributedString alloc] initWithString:dict[@"__text"] attributes:attributedTextAttributes];
+          }
+          // Not sure what is in the _value
+          return [[NSAttributedString alloc] initWithString:@"" attributes:attributedTextAttributes];
+        }
+        @catch (NSException * e) {
+            return [[NSAttributedString alloc] initWithString:@"" attributes:attributedTextAttributes];
+        }
         
     } else if (_type == BRACellContentTypeInlineString) {
 // TODO : Not Implemented

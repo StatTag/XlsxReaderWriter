@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "BRACellRange.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRACellRange.h>
 
 @interface BRAMergeCell : BRACellRange
 

@@ -6,7 +6,9 @@
 //  Copyright © 2015 BRAE. All rights reserved.
 //
 
-#import "BRAOpenXmlSubElement.h"
+@import Foundation;
+
+#import <XlsxReaderWriter/BRAOpenXmlSubElement.h>
 
 @interface BRACalcChainCell : BRAOpenXmlSubElement
 

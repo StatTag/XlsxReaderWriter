@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRAPlatformSpecificDefines.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRAPlatformSpecificDefines.h>
 
 static const NSString *kBRAFontNameRegular = @"regular";
 static const NSString *kBRAFontNameItalic = @"italic";

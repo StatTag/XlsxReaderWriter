@@ -6,7 +6,8 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRAOpenXmlSubElement.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRAOpenXmlSubElement.h>
 
 @class BRARelationship;
 

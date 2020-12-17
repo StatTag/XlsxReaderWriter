@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "BRAOpenXmlElement.h"
-#import "NSDictionary+OpenXMLDictionaryParser.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRAOpenXmlElement.h>
+#import <XlsxReaderWriter/NSDictionary+OpenXMLDictionaryParser.h>
 
 @class BRARelationships;
 

@@ -6,10 +6,9 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "XMLDictionary.h"
-#import "NativeColor+OpenXML.h"
-#import "BRAElementWithRelationships.h"
+@import Foundation;
+#import <XlsxReaderWriter/NativeColor+OpenXML.h>
+#import <XlsxReaderWriter/BRAElementWithRelationships.h>
 
 @interface BRARelationship : BRAElementWithRelationships
 

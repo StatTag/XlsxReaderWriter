@@ -6,11 +6,8 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "BRAOpenXmlElement.h"
-#import "NSDictionary+OpenXMLDictionaryParser.h"
-#import "BRAContentTypesDefaultExtension.h"
-#import "BRAContentTypesOverride.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRAOpenXmlElement.h>
 
 typedef NSString *BRAContentType;
 

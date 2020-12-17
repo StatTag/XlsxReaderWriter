@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRARelationship.h"
-#import "BRARelationships.h"
-#import "BRARelatedToColumnAndRowProtocol.h"
-#import "BRAWorksheetDrawing.h"
-#import "BRAImage.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRARelatedToColumnAndRowProtocol.h>
+#import <XlsxReaderWriter/BRARelationship.h>
+
+@class BRAWorksheetDrawing, BRAImage, BRAAnchor;
 
 @interface BRADrawing : BRARelationship <BRARelatedToColumnAndRowProtocol>
 

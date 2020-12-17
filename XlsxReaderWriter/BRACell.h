@@ -6,9 +6,12 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "BRAOpenXmlSubElement.h"
-#import "BRACellFill.h"
+@import Foundation;
+@import CoreGraphics;
+#import <XlsxReaderWriter/BRAPlatformSpecificDefines.h>
+
+#import <XlsxReaderWriter/BRAOpenXmlSubElement.h>
+#import <XlsxReaderWriter/BRACellFill.h>
 
 @class BRAMergeCell, BRACellFormat, BRARow, BRAImage;
 
@@ -58,7 +61,9 @@ typedef enum : NSUInteger {
 //Cell content getters
 - (BOOL)boolValue;
 - (NSInteger)integerValue;
+- (long long)longLongValue;
 - (float)floatValue;
+- (double)doubleValue;
 - (NSString *)stringValue;
 - (NSAttributedString *)attributedStringValue;
 - (NSDate *)dateValue;

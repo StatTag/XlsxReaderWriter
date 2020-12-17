@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRAContentTypesDefaultExtension.h"
-#import "BRARelationship.h"
+#import <XlsxReaderWriter/BRAContentTypesDefaultExtension.h>
+#import <XlsxReaderWriter/BRARelationship.h>
+#import <XlsxReaderWriter/XlsxReaderXMLDictionary.h>
 
 @implementation BRAContentTypesDefaultExtension
 
@@ -43,8 +44,8 @@
 - (void)loadAttributes {
     NSDictionary *dictionaryRepresentation = [super dictionaryRepresentation];
 
-    self.extension = dictionaryRepresentation.attributes[@"Extension"];
-    self.contentType = dictionaryRepresentation.attributes[@"ContentType"];
+    self.extension = dictionaryRepresentation.xlsxReaderAttributes[@"Extension"];
+    self.contentType = dictionaryRepresentation.xlsxReaderAttributes[@"ContentType"];
 }
 
 @end

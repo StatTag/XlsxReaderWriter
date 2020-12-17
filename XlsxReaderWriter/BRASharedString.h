@@ -6,9 +6,8 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-
-#import "BRAOfficeDocument.h"
-#import "BRAOpenXmlSubElement.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRAOpenXmlSubElement.h>
 
 @interface BRASharedString : BRAOpenXmlSubElementWithStyle {
     NSMutableAttributedString *_attributedString;

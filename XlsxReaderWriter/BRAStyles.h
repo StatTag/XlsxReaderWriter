@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRARelationship.h"
-#import "BRACellFill.h"
-#import "BRACellFormat.h"
-#import "BRANumberFormat.h"
-#import "BRATheme.h"
-#import "BRAPlatformSpecificDefines.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRAPlatformSpecificDefines.h>
+
+#import <XlsxReaderWriter/BRARelationship.h>
+
+@class BRATheme, BRANumberFormat;
 
 @interface BRAStyles : BRARelationship {
     NSDictionary *_attributes;

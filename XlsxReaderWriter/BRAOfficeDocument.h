@@ -6,14 +6,10 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "BRARelationship.h"
-#import "BRAStyles.h"
-#import "BRACalcChain.h"
-#import "BRAComments.h"
-#import "BRAOpenXmlSubElement.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRARelationship.h>
 
-@class BRASharedStrings;
+@class BRASharedStrings, BRACalcChain, BRAStyles, BRAWorksheet;
 
 @interface BRAOfficeDocument : BRARelationship
 

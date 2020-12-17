@@ -6,8 +6,11 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "BRAOpenXmlSubElement.h"
+@import Foundation;
+@import CoreGraphics;
+
+#import <XlsxReaderWriter/BRAPlatformSpecificDefines.h>
+#import <XlsxReaderWriter/BRAOpenXmlSubElement.h>
 
 @class BRAStyles;
 

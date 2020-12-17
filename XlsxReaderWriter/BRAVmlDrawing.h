@@ -6,7 +6,8 @@
 //  Copyright © 2015 BRAE. All rights reserved.
 //
 
-#import "BRARelationship.h"
+@import Foundation;
+#import <XlsxReaderWriter/BRARelationship.h>
 
 @interface BRAVmlDrawing : BRARelationship
 

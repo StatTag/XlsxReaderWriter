@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRAContentTypesOverride.h"
-#import "BRARelationship.h"
+#import <XlsxReaderWriter/BRAContentTypesOverride.h>
+#import <XlsxReaderWriter/BRARelationship.h>
+#import <XlsxReaderWriter/XlsxReaderXMLDictionary.h>
 
 @implementation BRAContentTypesOverride
 
@@ -25,8 +26,8 @@
 - (void)loadAttributes {
     NSDictionary *dictionaryRepresentation = [super dictionaryRepresentation];
 
-    self.contentType = dictionaryRepresentation.attributes[@"ContentType"];
-    self.partName = dictionaryRepresentation.attributes[@"PartName"];
+    self.contentType = dictionaryRepresentation.xlsxReaderAttributes[@"ContentType"];
+    self.partName = dictionaryRepresentation.xlsxReaderAttributes[@"PartName"];
 }
 
 - (NSString *)description {

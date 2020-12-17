@@ -6,11 +6,19 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRAOfficeDocument.h"
-#import "BRARelationships.h"
-#import "BRASharedStrings.h"
-#import "BRAWorksheet.h"
-#import "BRASheet.h"
+#import <XlsxReaderWriter/BRAOfficeDocument.h>
+#import <XlsxReaderWriter/BRARelationships.h>
+#import <XlsxReaderWriter/BRASharedStrings.h>
+#import <XlsxReaderWriter/BRAWorksheet.h>
+#import <XlsxReaderWriter/BRASheet.h>
+#import <XlsxReaderWriter/BRANumberFormat.h>
+#import <XlsxReaderWriter/BRATheme.h>
+#import <XlsxReaderWriter/BRAStyles.h>
+#import <XlsxReaderWriter/BRACalcChain.h>
+#import <XlsxReaderWriter/BRAComments.h>
+#import <XlsxReaderWriter/BRAOpenXmlSubElement.h>
+#import <XlsxReaderWriter/XlsxReaderXMLDictionary.h>
+#import <XlsxReaderWriter/NSDictionary+OpenXmlString.h>
 
 @implementation BRAOfficeDocument
 
@@ -42,10 +50,10 @@
     _calcChain = [self.relationships anyRelationshipWithType:[BRACalcChain fullRelationshipType]];
     
     //Sheets
-    NSMutableArray *sheets = @[].mutableCopy;
+    NSMutableArray *sheets = [[NSMutableArray alloc] init];
     NSDictionary *dictionaryRepresentation = [NSDictionary dictionaryWithOpenXmlString:_xmlRepresentation];
     
-    for (NSDictionary *openXmlAttributes in [dictionaryRepresentation arrayValueForKeyPath:@"sheets.sheet"]) {
+    for (NSDictionary *openXmlAttributes in [dictionaryRepresentation xlsxReaderArrayValueForKeyPath:@"sheets.sheet"]) {
         [sheets addObject:[[BRASheet alloc] initWithOpenXmlAttributes:openXmlAttributes]];
     }
     
@@ -142,7 +150,7 @@
 }
 
 - (NSArray *)worksheets {
-    NSMutableArray *worksheets = @[].mutableCopy;
+    NSMutableArray *worksheets = [[NSMutableArray alloc] init];
     
     for (BRASheet *sheet in _sheets) {
         BRAWorksheet *worksheet = [self.relationships relationshipWithId:sheet.identifier];
@@ -176,7 +184,7 @@
         return [obj1.identifier compare:obj2.identifier];
     }];
     
-    NSMutableArray *sheetsArray = @[].mutableCopy;
+    NSMutableArray *sheetsArray = [[NSMutableArray alloc] init];
     
     for (BRASheet *sheet in sheets) {
         [sheetsArray addObject:[sheet dictionaryRepresentation]];
