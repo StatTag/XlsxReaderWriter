@@ -1793,7 +1793,7 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = macosx;
 				VALIDATE_PRODUCT = NO;
 			};
 			name = Debug;
@@ -1847,7 +1847,7 @@
 					"$(inherited)",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = NO;
