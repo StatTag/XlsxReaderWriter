@@ -136,7 +136,7 @@
 		82168542255025090041F2FD /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 8289AAC62041E8B500E00603 /* libz.1.tbd */; };
 		82168549255025160041F2FD /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82168548255025160041F2FD /* UIKit.framework */; };
 		8216854B255025270041F2FD /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8216854A255025270041F2FD /* WatchKit.framework */; };
-		82168587255029AA0041F2FD /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82DAA59B237C0A71003AFDE7 /* ZipArchive.framework */; platformFilter = ios; };
+		82168587255029AA0041F2FD /* ZipArchive.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82DAA59B237C0A71003AFDE7 /* ZipArchive.framework */; platformFilter = maccatalyst; };
 		8265BC312041C4BE004A2A7D /* XlsxReaderXMLDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 8265BC2F2041C4BE004A2A7D /* XlsxReaderXMLDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8265BC322041C4BE004A2A7D /* XlsxReaderXMLDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8265BC302041C4BE004A2A7D /* XlsxReaderXMLDictionary.m */; };
 		8265BC332041C4BE004A2A7D /* XlsxReaderXMLDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = 8265BC302041C4BE004A2A7D /* XlsxReaderXMLDictionary.m */; };
@@ -1866,6 +1866,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ThirdParties/**";
 			};
@@ -1883,6 +1884,7 @@
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/ThirdParties/**";
 			};
