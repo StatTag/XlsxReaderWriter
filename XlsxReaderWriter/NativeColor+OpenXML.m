@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "NativeColor+OpenXML.h"
+@import Foundation;
+#import <XlsxReaderWriter/NativeColor+OpenXML.h>
 
 @implementation BRANativeColor (OpenXml)
 

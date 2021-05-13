@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 René Bigot. All rights reserved.
 //
 
-#import "BRARelationship.h"
-#import "BRARelationships.h"
+#import <XlsxReaderWriter/BRARelationship.h>
+#import <XlsxReaderWriter/BRARelationships.h>
+#import <XlsxReaderWriter/XlsxReaderXMLDictionary.h>
 
 @implementation BRARelationship
 
